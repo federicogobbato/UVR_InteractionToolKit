@@ -1,0 +1,6 @@
+
+
+1. fade in /fade out on teleport
+2. switch
+2. VRTK_TeleportDisableOnHeadsetCollision
+3. VRTK_DashTeleport

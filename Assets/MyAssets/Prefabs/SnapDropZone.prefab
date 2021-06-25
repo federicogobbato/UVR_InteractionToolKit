@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7494932332081032138
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7494932332081032141}
+  - component: {fileID: 7494932332081032140}
+  - component: {fileID: 7494932332081032139}
+  m_Layer: 0
+  m_Name: DropZone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7494932332081032141
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7494932332081032138}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -3.553688, y: 1.068, z: -1.22}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!114 &7494932332081032140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7494932332081032138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7807f7ea24a87e4cab81024bda2e2ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDrop:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ShowInEditor: 0
+  m_ShowSphereCollider: 0
+  m_SampleObject: {fileID: 0}
+  m_Type: 1
+  m_ShowBaseMeshMaterial: 1
+  m_ShowValidMeshMaterial: 1
+  m_Connection: 0
+  m_DroppableOnThrow: 0
+  m_GrabbableAfterDrop: 1
+  m_DelayBeforeDisappear: 1
+  m_RigidbodyToConnect: {fileID: 0}
+  m_BaseDropMaterial: {fileID: 2100000, guid: 74787af0fab068d43b1548da5b9e52ed, type: 2}
+  m_ValidDropMaterial: {fileID: 2100000, guid: e6050ed91473f854e9b1a572bf052f75, type: 2}
+  m_SphereColliderMaterial: {fileID: 0}
+  m_SampleEditor: {fileID: 0}
+  m_SphereColliderMesh: {fileID: 0}
+--- !u!135 &7494932332081032139
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7494932332081032138}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.2
+  m_Center: {x: 0, y: 0, z: 0}
