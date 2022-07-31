@@ -7,6 +7,7 @@ using UnityEngine.SpatialTracking;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.UI;
+using Unity.XR.CoreUtils;
 using UVR;
 using VRStandardAssets.Utils;
 
@@ -56,8 +57,6 @@ public class UV_MasterController : Singleton<UV_MasterController>
     public XRDirectInteractor LeftDirectInteractor;
 
     public XRRig Rig { get; private set; }
-    public HandPrefab RightHandPrefab { get; private set; }
-    public HandPrefab LeftHandPrefab { get; private set; }
 
     [HideInInspector] public bool TouchingPad = false;
     [HideInInspector] public Vector3 TouchDirection;
@@ -106,6 +105,7 @@ public class UV_MasterController : Singleton<UV_MasterController>
     {
         base.Awake();
         Rig = GetComponent<XRRig>();
+
         if (UIInputModule)
         {
             m_CurrentEventSystem = UIInputModule.GetComponent<EventSystem>();
@@ -206,16 +206,16 @@ public class UV_MasterController : Singleton<UV_MasterController>
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
 
-        //**Check for grab input**//
+        //** Check for grab inputs, only necessary to play the animation on network **//
         AnimateHandGrab();
 
         //** Check for teleport inputs **//
-        if (TeleportRightActive && !m_RightLaserActived)
+        if (RightTeleportInteractor && TeleportRightActive && !m_RightLaserActived)
         {
             RightTeleportUpdate();
         }
 
-        if (TeleportLeftActive && !m_LeftLaserActived)
+        if (LeftTeleportInteractor && TeleportLeftActive && !m_LeftLaserActived)
         {
             LeftTeleportUpdate();
         }
@@ -303,7 +303,7 @@ public class UV_MasterController : Singleton<UV_MasterController>
     }
 
     /// <summary>
-    /// I could use InputDisplay to get the input
+    /// It use to play the grab animations over a network
     /// </summary>
     void AnimateHandGrab()
     {
@@ -313,13 +313,13 @@ public class UV_MasterController : Singleton<UV_MasterController>
         if (gripPressedLeft)
         {
             m_LeftIsGripping = true;
-            OnPlayGrabAnimation?.Invoke(XRNode.LeftHand, "Selected", false);
+            OnPlayGrabAnimation?.Invoke(XRNode.LeftHand, "Selected", true);
         }
-        else if(m_LeftIsGripping)
+        else if (m_LeftIsGripping)
         {
             m_LeftIsGripping = false;
-            OnPlayGrabAnimation?.Invoke(XRNode.LeftHand, "Deselected", false);
-            OnPlayGrabAnimation?.Invoke(XRNode.LeftHand, "Selected", true);
+            OnPlayGrabAnimation?.Invoke(XRNode.LeftHand, "Deselected", true);
+            OnPlayGrabAnimation?.Invoke(XRNode.LeftHand, "Selected", false);
         }
 
         bool gripPressedRight;
@@ -328,13 +328,13 @@ public class UV_MasterController : Singleton<UV_MasterController>
         if (gripPressedRight)
         {
             m_RightIsGripping = true;
-            OnPlayGrabAnimation?.Invoke(XRNode.RightHand, "Selected", false);
+            OnPlayGrabAnimation?.Invoke(XRNode.RightHand, "Selected", true);
         }
-        else if(m_RightIsGripping)
+        else if (m_RightIsGripping)
         {
             m_RightIsGripping = false;
-            OnPlayGrabAnimation?.Invoke(XRNode.RightHand, "Deselected", false);
-            OnPlayGrabAnimation?.Invoke(XRNode.RightHand, "Selected", true);
+            OnPlayGrabAnimation?.Invoke(XRNode.RightHand, "Deselected", true);
+            OnPlayGrabAnimation?.Invoke(XRNode.RightHand, "Selected", false);
         }
     }
 

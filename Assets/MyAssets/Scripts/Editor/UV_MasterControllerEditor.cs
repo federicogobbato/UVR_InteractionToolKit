@@ -68,6 +68,7 @@ public class UV_MasterControllerEditor : Editor
         GUILayout.Label("Setup", LabelStyle);
         GUILayout.BeginVertical(Area);
         EditorGUILayout.PropertyField(MainCamera);
+        EditorGUILayout.PropertyField(UIInputModule);
         EditorGUILayout.PropertyField(StartingPosition);
         GUILayout.EndVertical();
         
@@ -99,7 +100,6 @@ public class UV_MasterControllerEditor : Editor
 
         GUILayout.Label("UI_Laser", LabelStyle);
         GUILayout.BeginVertical(Area);
-        EditorGUILayout.PropertyField(UIInputModule);
         EditorGUILayout.PropertyField(RightInteractorUI);
         EditorGUILayout.PropertyField(LeftInteractorUI);
         EditorGUILayout.PropertyField(InteractorUIActive);

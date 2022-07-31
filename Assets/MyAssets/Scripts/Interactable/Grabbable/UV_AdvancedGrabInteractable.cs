@@ -27,8 +27,8 @@ namespace UVR
 
         class SavedTransform
         {
-            public Vector3 OriginalPosition;
-            public Quaternion OriginalRotation;
+            public Vector3 Position;
+            public Quaternion Rotation;
         }
 
         [SerializeField] ADVANCED_GRAB m_AdvancedGrab = ADVANCED_GRAB.OFFSET;
@@ -37,19 +37,11 @@ namespace UVR
 
         #region INSPECTOR FIELDS
 
-        //Custom event that can be called whenever we need
-        public event Action eOnHover;
-        public event Action eOnHoverExit;
-        public event Action eOnSelect;
-        public event Action eOnSelectExit;
-        public event Action eOnActivate;
-        public event Action eOnDeactivate;
-
         [SerializeField] XRNodeEvo m_TouchableBy = XRNodeEvo.Everything;
         [SerializeField] XRNodeEvo m_GrabbableBy = XRNodeEvo.Everything;
         [SerializeField] XRNodeEvo m_ActivableBy = XRNodeEvo.Everything;
 
-        [Tooltip("Can be activated by a normal interactor or a XRRayInteractor, just touching")]
+        [Tooltip("Can be activated by a XRDirectInteractor or a XRRayInteractor, just touching")]
         [SerializeField] bool m_ActiveOnTouch = false;
         public bool ActiveOnTouch { get { return m_ActiveOnTouch; } set { m_ActiveOnTouch = value; } }
 
@@ -59,12 +51,8 @@ namespace UVR
         [SerializeField] bool m_HoldButtonToActivate = true;
         public bool HoldButtonToActivate { get { return HoldButtonToActivate; } set { HoldButtonToActivate = value; } }
 
-        // !DEPRECATED
-        ////[Tooltip("Interactable by a XRRayInteractor")]
-        ////[SerializeField] bool m_LaserInteractable = true;
-        ////public bool LaserInteractable { get { return m_LaserInteractable; } set { m_LaserInteractable = value; } }
-
         #endregion
+        
 
         #region FIELDS
 
@@ -74,9 +62,17 @@ namespace UVR
         public XRBaseInteractor CurrentInteractor { get; private set; }
         public XRController CurrentController { get; private set; }
 
-        public bool IsActive { get; private set; } = false;
-        public bool IsActiveOnTouch { get; private set; } = false;
+        public bool IsActived { get; private set; } = false;
+        public bool IsActivedOnTouch { get; private set; } = false;
         public bool IsGrabbed { get; private set; } = false;
+
+        // Custom events called when on touch (hover), on selection (grab) or on activation
+        public event Action eOnHover;
+        public event Action eOnHoverExit;
+        public event Action eOnSelect;
+        public event Action eOnSelectExit;
+        public event Action eOnActivate;
+        public event Action eOnDeactivate;
 
         [HideInInspector] public bool CantHover = false;
         [HideInInspector] public bool CantHoverExit = false;
@@ -84,6 +80,8 @@ namespace UVR
         [HideInInspector] public bool CantSelectExit = false;
         [HideInInspector] public bool CantActivated = false;
         [HideInInspector] public bool CantDeactivated = false;
+
+        protected Rigidbody m_Rb;
 
         /// <summary>
         /// Used to save the attachTransform of the grabbing interactors
@@ -93,18 +91,17 @@ namespace UVR
         /// <summary>
         /// The Interactors that are touching the object and the current grab precicion point 
         /// </summary>
-        Dictionary<UV_XRDirectInteractor, Transform> m_InteractorAttach = new Dictionary<UV_XRDirectInteractor, Transform>();
-
-        protected Rigidbody m_Rb;
+        Dictionary<UV_XRDirectInteractor, SavedTransform> m_InteractorsTouching = new Dictionary<UV_XRDirectInteractor, SavedTransform>();
 
         #endregion
+
 
         protected override void Awake()
         {
             base.Awake();
-            // The base class already grab it but don't expose it so have to grab it again
             m_Rb = GetComponent<Rigidbody>();
         }
+
 
         private void Start()
         {
@@ -121,9 +118,15 @@ namespace UVR
 
             if(!HoldButtonToGrab && AdvancedGrab == ADVANCED_GRAB.OFFSET)
             {
-                Debug.LogWarning("<color=red>If HoldButtonToGrab is false the Advanced grab should be Precision Grab or None!<color=red>");
+                Debug.LogWarning("<color=red>If HoldButtonToGrab is false the Advanced grab should be Precision Grab or None!</color>");
+            }
+
+            if (transform.parent && transform.parent.GetComponent<SnapDropZone>())
+            {
+                Debug.LogWarning("<color=red>Better use PRECISION_GRAB or NONE for SnapDropZone objects!</color>");                
             }
         }
+
 
         /// <summary>
         /// Check if the activate button is pressed 
@@ -137,17 +140,17 @@ namespace UVR
 
                 if (activeIsPressed)
                 {
-                    if (!IsActiveOnTouch)
+                    if (!IsActivedOnTouch)
                     {
                         OnActivate(CurrentInteractor);
-                        IsActiveOnTouch = true;
+                        IsActivedOnTouch = true;
                     }
                 }
-                else if (IsActiveOnTouch)
+                else if (IsActivedOnTouch)
                 {
                     eOnDeactivate?.Invoke();
                     base.OnDeactivate(CurrentInteractor);
-                    IsActiveOnTouch = false;
+                    IsActivedOnTouch = false;
                 }
             }
         }
@@ -198,11 +201,6 @@ namespace UVR
                 if (!IsGrabbed)
                 {
                     ProcessGrab(interactor);
-
-                    //Disable model(hand) controller animations and invert grab animation 
-                    ////interactor.GetComponent<XRController>().animateModel = false;
-                    ////interactor.GetComponent<XRController>().modelSelectTransition = "Deselected";
-
                     eOnSelect?.Invoke();
                     IsGrabbed = true;
                 }
@@ -210,12 +208,7 @@ namespace UVR
                 {
                     IsGrabbed = false;
                     eOnSelectExit?.Invoke();
-
                     UnGrab(interactor);
-
-                    //Enable model(hand) controller animations and reset grab animation 
-                    ////interactor.GetComponent<XRController>().animateModel = true;
-                    ////interactor.GetComponent<XRController>().modelSelectTransition = "Selected";
                 }
 
                 CurrentInteractor = interactor;
@@ -252,8 +245,8 @@ namespace UVR
 
             if (!m_HoldButtonToActivate)
             {
-                IsActive = !IsActive;
-                if (IsActive)
+                IsActived = !IsActived;
+                if (IsActived)
                 {
                     base.OnActivate(interactor);
                 }
@@ -297,12 +290,6 @@ namespace UVR
                 {
                     bool haveAttach = attachTransform != null;
 
-                    Vector3 offset = Vector3.zero;
-					
-					// !Better use PRECISION_GRAB or NONE for SnapDropZone objects
-                    ////if (transform.parent && transform.parent.GetComponent<SnapDropZone>())
-                    ////    offset = m_Rb.centerOfMass;
-
                     // The position and rotation of the interactor attachTransform are modified
                     interactor.attachTransform.position = haveAttach ? attachTransform.position : m_Rb.worldCenterOfMass /*- offset*/;
                     interactor.attachTransform.rotation = haveAttach ? attachTransform.rotation : m_Rb.rotation;
@@ -310,7 +297,11 @@ namespace UVR
                 else if(m_AdvancedGrab == ADVANCED_GRAB.PRECISION_GRAB &&
                         interactor is UV_XRDirectInteractor)
                 {
-                    attachTransform = m_InteractorAttach[interactor as UV_XRDirectInteractor];
+                    GameObject attach = new GameObject("Attach " + interactor);
+                    attach.transform.parent = this.transform;
+                    attachTransform = attach.transform;
+                    attachTransform.position = m_InteractorsTouching[interactor as UV_XRDirectInteractor].Position;
+                    attachTransform.rotation = m_InteractorsTouching[interactor as UV_XRDirectInteractor].Rotation;
                     // Just the rotation of the interactor attachTransform is modified
                     interactor.attachTransform.rotation = attachTransform.rotation;
                 }
@@ -336,22 +327,26 @@ namespace UVR
         {
             SavedTransform savedTransform = new SavedTransform();
 
-            savedTransform.OriginalPosition = interactor.attachTransform.localPosition;
-            savedTransform.OriginalRotation = interactor.attachTransform.localRotation;
+            savedTransform.Position = interactor.attachTransform.localPosition;
+            savedTransform.Rotation = interactor.attachTransform.localRotation;
 
             m_SavedTransforms[interactor] = savedTransform;
         }
 
 
-        protected void RemoveInteractorAttach(XRBaseInteractor interactor)
+        public void RemoveInteractorAttach(XRBaseInteractor interactor)
         {
             SavedTransform savedTransform = null;
             if (m_SavedTransforms.TryGetValue(interactor, out savedTransform))
             {
-                interactor.attachTransform.localPosition = savedTransform.OriginalPosition;
-                interactor.attachTransform.localRotation = savedTransform.OriginalRotation;
-
+                interactor.attachTransform.localPosition = savedTransform.Position;
+                interactor.attachTransform.localRotation = savedTransform.Rotation;
                 m_SavedTransforms.Remove(interactor);
+            }
+
+            if(attachTransform)
+            {
+                Destroy(attachTransform.gameObject);
             }
         }
 
@@ -364,35 +359,19 @@ namespace UVR
         {
             if (m_AdvancedGrab == ADVANCED_GRAB.PRECISION_GRAB)
             {
-                if (!m_InteractorAttach.ContainsKey(interactor))
-                {
-                    GameObject attach = new GameObject("Attach " + interactor);
-                    attach.transform.parent = this.transform;
-                    attachTransform = attach.transform;
-
-                    m_InteractorAttach[interactor] = attachTransform;
-                }
-                else
-                {
-                    attachTransform = m_InteractorAttach[interactor];
-                    if (!attachTransform)
-                    {
-                        RemoveInteractorAttach(interactor);
-                        return;
-                    }
-                }
-
-                attachTransform.position = newPosition;
-                attachTransform.rotation = m_Rb.rotation;
+                SavedTransform savedTransform = new SavedTransform();
+                savedTransform.Position = newPosition;
+                savedTransform.Rotation = m_Rb.rotation;
+                m_InteractorsTouching[interactor] = savedTransform;
             }
         }
 
 
         public void ResetCurrentTouchInteractor()
         {
-            if (CurrentInteractor && IsActiveOnTouch)
+            if (CurrentInteractor && IsActivedOnTouch)
             {
-                IsActiveOnTouch = false;
+                IsActivedOnTouch = false;
             }
 
             CurrentInteractor = null;

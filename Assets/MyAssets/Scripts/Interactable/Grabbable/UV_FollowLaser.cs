@@ -51,6 +51,11 @@ namespace UVR
             {
                 m_Interactable.eOnHover += LaserHover;
                 m_Interactable.eOnDeactivate += LaserDeactivated;
+
+                if(!m_Interactable.IsActivedOnTouch)
+                {
+                    Debug.LogWarning("<color=red>Active on Touch must be set to true on UV_AdvancedGrabInteractable</color>");
+                }
             }
             else
             {
@@ -86,7 +91,6 @@ namespace UVR
             }
 
             m_Offset = m_MainMeshRenderer.bounds.size;
-            ////Debug.Log("Size " + this + " : " + m_Offset);
 
             m_Offset.x /= 2;
             m_Offset.y /= 2;
@@ -187,7 +191,7 @@ namespace UVR
         /// </summary>
         private void Update()
         {
-            if (m_Interactable.IsActiveOnTouch && 
+            if (m_Interactable.IsActivedOnTouch && 
                 m_RayInteractor)
             {
                 IsPulling();
@@ -200,7 +204,7 @@ namespace UVR
                 else 
                 {
                     RaycastHit hit;
-                    if (m_RayInteractor.GetCurrentRaycastHit(out hit))
+                    if (m_RayInteractor.TryGetCurrent3DRaycastHit(out hit))
                     {
                         if (hit.collider)
                         {
@@ -247,7 +251,7 @@ namespace UVR
 
         private void FixedUpdate()
         {
-            if (m_Interactable.IsActiveOnTouch && m_Interactable.CurrentInteractor is XRRayInteractor && m_RB)
+            if (m_Interactable.IsActivedOnTouch && m_Interactable.CurrentInteractor is XRRayInteractor && m_RB)
             {
                 m_RB.position = m_NewPositionInteractable;
             }

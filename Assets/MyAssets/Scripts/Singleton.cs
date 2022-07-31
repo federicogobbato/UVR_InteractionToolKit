@@ -27,10 +27,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 {
                     m_Instance = (T)FindObjectOfType(typeof(T));
 
-                    //if (m_Instance == null && !m_ShuttingDown)
-                    //{
-                    //    GameObject singleton = new GameObject(typeof(T).ToString() + "Singleton", typeof(T));
-                    //}
+                    if (m_Instance == null && !m_ShuttingDown)
+                    {
+                        GameObject singleton = new GameObject(typeof(T).ToString() + "Singleton", typeof(T));
+                    }
                 }
             }
 
@@ -38,7 +38,6 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             {
                 Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
                     "' already destroyed. Returning null.");
-                return null;
             }
 
             return m_Instance;
@@ -77,12 +76,12 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     protected void OnApplicationQuit()
     {
         m_ShuttingDown = true;
-        m_Instance = null;
+        //m_Instance = null;
     }
 
     protected void OnDestroy()
     {
         m_ShuttingDown = true;
-        m_Instance = null;
+        //m_Instance = null;
     }
 }

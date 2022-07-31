@@ -27,18 +27,28 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 7cf02af9f0ce10847b79ab023e110182, type: 2}
     - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.193
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.183
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.539
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}
@@ -53,16 +63,6 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: bf3939cad79ab9040bd9b59ee6829398,
@@ -83,7 +83,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}
       propertyPath: m_Name
-      value: HandMale Variant
+      value: HandProto
       objectReference: {fileID: 0}
     - target: {fileID: 591223817767178332, guid: bf3939cad79ab9040bd9b59ee6829398,
         type: 3}

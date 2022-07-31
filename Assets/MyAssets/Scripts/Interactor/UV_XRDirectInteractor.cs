@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -12,10 +13,10 @@ namespace UVR
     /// </summary>
     public class UV_XRDirectInteractor : XRDirectInteractor
     {
-        [HideInInspector] public bool IsBusy = false;
-
         void Update()
         {
+            List<IXRActivateInteractable> validTargets = new List<IXRActivateInteractable>();
+            GetActivateTargets(validTargets);
             validTargets.RemoveAll(x => x == null);
         }
 
@@ -24,16 +25,20 @@ namespace UVR
         /// </summary>
         public void ForceUntouch(XRBaseInteractable interactable)
         {
+            List<IXRActivateInteractable> validTargets = new List<IXRActivateInteractable>();
+            GetActivateTargets(validTargets);
             validTargets.Remove(interactable);
             //Debug.Log("ValidTargets Count = " + ValidTargets.Count);
         }
 
 
         /// <summary>
-        /// Add the interactable from the list of the touched interactables 
+        /// Add the interactable to the list of the touched interactables 
         /// </summary>
         public void ForceTouch(XRBaseInteractable interactable)
         {
+            List<IXRActivateInteractable> validTargets = new List<IXRActivateInteractable>();
+            GetActivateTargets(validTargets);
             validTargets.Add(interactable);
             //Debug.Log("ValidTargets Count = " + ValidTargets.Count);
         }
@@ -42,32 +47,25 @@ namespace UVR
         protected new void OnTriggerEnter(Collider col)
         {
             base.OnTriggerEnter(col);
-
-            if(validTargets.Count > 0)
-            {
-                if(validTargets[validTargets.Count-1] is UV_AdvancedGrabInteractable)
-                {
-                    ((UV_AdvancedGrabInteractable)validTargets[validTargets.Count - 1]).SetPrecisionGrab(this, col.ClosestPoint(transform.position));     
-                }
-            }
+            PerformPrecisionGrab(col);
         }
 
 
-        protected void OnTriggerStay(Collider col)
+        protected new void OnTriggerStay(Collider col)
         {
-            //Search the collider inside the valid targets list
-            var interactable = validTargets.Find(inter =>
-            {
-                if (inter == null) return inter;
-                var colliders = inter.GetComponentsInChildren<Collider>().ToList();
-                return colliders.Find(c => c == col);
-            });
+            PerformPrecisionGrab(col);
+            base.OnTriggerStay(col);
+        }
 
-            if (interactable && interactable is UV_AdvancedGrabInteractable)
+        protected void PerformPrecisionGrab(Collider col)
+        {
+            var advancedGrab = col.GetComponentInParent<UV_AdvancedGrabInteractable>();
+            if (advancedGrab)
             {
-                ((UV_AdvancedGrabInteractable)interactable).SetPrecisionGrab(this, col.ClosestPoint(transform.position));
+                advancedGrab.SetPrecisionGrab(this, col.ClosestPoint(transform.position));
             }
         }
+
     }
 }
 

@@ -89,7 +89,7 @@ namespace UVR
 
             if (!FirstGrab)
             {
-                Debug.Log(interactor + " SELECT PRIMARY");
+                //Debug.Log(interactor + " SELECT PRIMARY");
 
                 base.OnSelectEntering(interactor);
 

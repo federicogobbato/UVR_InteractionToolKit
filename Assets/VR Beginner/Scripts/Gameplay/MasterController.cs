@@ -14,8 +14,6 @@ public class MasterController : MonoBehaviour
     static MasterController s_Instance = null;
     public static MasterController Instance => s_Instance;
 
-    public XRRig Rig => m_Rig;
-
     [Header("Setup")]
     public bool DisableSetupForDebug = false;
     public Transform StartingPosition;
@@ -112,7 +110,7 @@ public class MasterController : MonoBehaviour
         if (foundControllers.Count > 0)
             m_RightInputDevice = foundControllers[0];
 
-        if (m_Rig.trackingOriginMode != TrackingOriginModeFlags.Floor)
+        if (m_Rig.currentTrackingOriginMode != TrackingOriginModeFlags.Floor)
             m_Rig.cameraYOffset = 1.8f;
     }
 

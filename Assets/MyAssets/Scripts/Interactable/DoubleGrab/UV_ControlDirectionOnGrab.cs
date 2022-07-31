@@ -116,7 +116,7 @@ namespace UVR
 
             if (!listInteractable.Contains(m_Interactable) && m_Interactable.FirstGrab is UV_XRDirectInteractor)
             {
-                Debug.Log("Interactable ADDED to " + m_Interactable.FirstGrab);
+                //Debug.Log("Interactable ADDED to " + m_Interactable.FirstGrab);
                 ((UV_XRDirectInteractor)m_Interactable.FirstGrab).ForceTouch(m_Interactable);
             }
         }
